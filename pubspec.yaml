@@ -44,6 +44,11 @@ dependencies:
   flex_color_scheme: ^7.3.1
   intl: ^0.19.0
   lottie: ^2.7.0
+  flutter_analog_clock: ^1.0.3
+  slide_digital_clock: ^1.0.3
+  get: ^4.6.6
+  perfect_volume_control: ^1.0.5
+
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +75,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

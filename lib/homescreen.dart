@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_00/edit_alarm.dart';
 import 'package:flutter_application_00/ring_alarm.dart';
 import 'package:flutter_application_00/tile.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,9 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<AlarmSettings> alarms;
-
   static StreamSubscription<AlarmSettings>? subscription;
-
   @override
   void initState() {
     super.initState();
@@ -40,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
-    await Navigator.push(
+    await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => AlarmRingScreen(alarmSettings: alarmSettings),
@@ -95,8 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var h = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.deepPurple,
       appBar: AppBar(
+        backgroundColor: Colors.deepPurpleAccent,
         centerTitle: true,
         title: const Text(
           'Mom Alarm',
@@ -106,20 +110,46 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 navigateToAlarmScreen(null);
               },
-              icon: Icon(Icons.add))
+              icon: const Icon(Icons.add))
         ],
       ),
       body: SafeArea(
         child: alarms.isNotEmpty
             ? Column(
                 children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.deepPurpleAccent,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(
+                            20.0), // Adjust the radius as needed
+                        bottomRight: Radius.circular(
+                            20.0), // Adjust the radius as needed
+                      ),
+                    ),
+                    child: DigitalClock(
+                      secondDigitTextStyle:
+                          TextStyle(fontSize: h * .03, color: Colors.white),
+                      hourMinuteDigitTextStyle:
+                          TextStyle(fontSize: h * .1, color: Colors.white),
+                      colon: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          ":",
+                          style:
+                              TextStyle(fontSize: h * .09, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: ListView.separated(
                       itemCount: alarms.length,
                       separatorBuilder: (context, index) =>
                           const Divider(height: 1),
                       itemBuilder: (context, index) {
-                        String result = DateFormat('yyyy-MM-dd').format(alarms[index].dateTime);
+                        String result = DateFormat('yyyy-MM-dd')
+                            .format(alarms[index].dateTime);
                         return AlarmTile(
                           Day: result,
                           key: Key(alarms[index].id.toString()),
@@ -138,13 +168,67 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               )
-            : Center(
-                child: Text(
-                  "No alarms set",
-                ),
+            : Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.deepPurpleAccent,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(
+                            20.0), // Adjust the radius as needed
+                        bottomRight: Radius.circular(
+                            20.0), // Adjust the radius as needed
+                      ),
+                    ),
+                    child: DigitalClock(
+                      secondDigitTextStyle:
+                          TextStyle(fontSize: h * .03, color: Colors.white),
+                      hourMinuteDigitTextStyle:
+                          TextStyle(fontSize: h * .1, color: Colors.white),
+                      colon: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          ":",
+                          style: TextStyle(fontSize: h * .09, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: h * 0.25),
+                  const Text(
+                    "No alarms set",
+                    style: TextStyle(
+                      color: Colors.white
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                      style: ButtonStyle(
+                        elevation:
+                            MaterialStateProperty.all(0), // Set elevation to 0
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.deepPurpleAccent),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.alarm_add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        navigateToAlarmScreen(null);
+                      },
+                      label: const Text(
+                        "Set Alarm",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                
+                ],
               ),
       ),
-      
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
